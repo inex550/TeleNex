@@ -1,3 +1,4 @@
+from TeleNex.teleNex.types import chat
 from typing import List, Optional
 
 import aiohttp
@@ -25,6 +26,15 @@ class ApiHelper:
         url = f'https://api.telegram.org/bot{self.token}/{method}'
         async with self.session.post(url, json=data) as resp:
             return await resp.json()
+
+    async def download_file(self, file_path: str, save_path: str=None):
+        async with self.session.get(f'https://api.telegram.org/file/bot{self.token}/{file_path}') as resp:
+            if save_path:
+                with open(save_path, 'wb') as file:
+                    data = await resp.content.read()
+                    file.write(data)
+            else:
+                return await resp.content.read()
 
     async def get_updates(
             self,

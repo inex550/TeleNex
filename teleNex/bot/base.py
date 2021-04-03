@@ -1,4 +1,4 @@
-from typing import Any, Dict, Callable, List
+from typing import Any, Dict, Callable, List, Tuple
 
 from ..types import Update, Message, Response
 from .helpers import ApiHelper
@@ -15,7 +15,11 @@ class BaseBot:
         self._update_offset = 0
 
         self._key_text_msgs: Dict[str, Callable[[Message], Any]] = {}
+        self._key_cmd_msgs: Dict[str, Callable[[Message], Any]] = {}
         self._global_msg_types: Dict[str, Callable[[Message], Any]] = {}
+
+        self._func_handlers: List[Tuple[ Callable[[Message], bool], Callable[[Message], Any] ]] = []
+        
 
     async def _process_message(self, message: Message):
         if 'all' in self._global_msg_types:
@@ -28,6 +32,9 @@ class BaseBot:
             if message.text in self._key_text_msgs:
                 asyncio.create_task( self._key_text_msgs[message.text](message) )
 
+            if message.text[1:] in self._key_cmd_msgs:
+                asyncio.create_task( self._key_cmd_msgs[message.text[1:]](message) )
+
         if message.document:
             if 'document' in self._global_msg_types:
                 asyncio.create_task( self._global_msg_types['document'](message) )
@@ -36,11 +43,17 @@ class BaseBot:
             if 'photo' in self._global_msg_types:
                 asyncio.create_task( self._global_msg_types['photo'](message) )
 
+        for item in self._func_handlers:
+            if item[0](message):
+                asyncio.create_task( item[1](message) )
+
+
     async def _process_update(self, update: Update) -> None:
         if update.message:
             await self._process_message(update.message)
         else:
             assert False, f'update attributes not supported'
+
 
     def _process_response(self, json_data: dict, cls):
         response = Response(json_data)

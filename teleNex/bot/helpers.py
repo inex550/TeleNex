@@ -6,7 +6,7 @@ import aiohttp
 
 def generate_payload(args: dict):
     del args['self']
-    data = { k: v for k, v in args.items() if v }
+    data = { k: v for k, v in args.items() if v is not None }
 
     return data
 

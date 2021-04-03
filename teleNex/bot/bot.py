@@ -1,4 +1,4 @@
-from typing import Callable, Optional, Any
+from typing import Callable, Optional, Any, List
 
 from .helpers import generate_payload
 from .base import BaseBot
@@ -33,15 +33,23 @@ class Bot(BaseBot):
 
     def on_message(
         self, *,
-        text: str = None,
-        msg_type: str = None
+        texts: List[str] = None,
+        cmds: List[str] = None,
+        msg_type: str = None,
+        func: Callable[[Message], bool] = None
     ):
-        def decorator(func: Callable[[Message], Any]):
-            if text:
-                self._key_text_msgs[text] = func
+        def decorator(d_func: Callable[[Message], Any]):
+            if texts:
+                self._key_text_msgs.update( {text: d_func for text in texts} )
+
+            if cmds:
+                self._key_cmd_msgs.update( {cmd: d_func for cmd in cmds} )
             
             if msg_type:
-                self._global_msg_types[msg_type] = func
+                self._global_msg_types[msg_type] = d_func
+
+            if func:
+                self._func_handlers.append( (func, d_func) )
 
         return decorator
             

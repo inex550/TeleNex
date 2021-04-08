@@ -1,8 +1,9 @@
 from typing import Callable, Optional, Any, List
 
-from .helpers import generate_payload
+from ..helpers import generate_payload
 from .base import BaseBot
 from ..types import Message, File
+from ..types import ReplyBase
 
 import asyncio
 
@@ -16,7 +17,8 @@ class Bot(BaseBot):
         disable_web_page_preview: Optional[bool] = None,
         disable_notification: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        allow_sending_without_reply: Optional[int] = None
+        allow_sending_without_reply: Optional[int] = None,
+        reply_markup: Optional[ReplyBase] = None
     ) -> Message:
         data = generate_payload(locals().copy())
         response = await self.api.make_request('sendMessage', data)

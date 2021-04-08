@@ -1,7 +1,7 @@
 from typing import Any, Dict, Callable, List, Tuple
 
 from ..types import Update, Message, Response
-from .helpers import ApiHelper
+from ..helpers import ApiHelper
 
 import asyncio
 
@@ -60,7 +60,7 @@ class BaseBot:
         if response.ok:
             return response.result_instance(cls)
         else:
-            assert False, f'{response.error_code} {response.description}'
+            print(f'Error: {response.error_code} => {response.description}')
         
 
     async def polling(self):

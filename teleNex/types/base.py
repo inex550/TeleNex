@@ -11,25 +11,36 @@ class TeleObj:
             field: Field = cur_type.__dict__.get(key)
 
             if field is None:
-                fname = cur_type._corrects.get(key)
-                field = cur_type.__dict__.get(fname)
+                key = cur_type._corrects.get(key)
+                field = cur_type.__dict__.get(key)
 
             if field is None:
-                raise TypeError(f'{type(self).__name__} got an unexpected keyword argument \'{key}\'')
+                #raise TypeError(f'{type(self).__name__} got an unexpected keyword argument \'{key}\'')
+                continue
 
-            self._make_field(key, value, field)
+            self.__dict__[key] = field.make_obj(value, self)
 
-    def _make_field(self, key: str, value, field: Field):
-        if value is None:
-            self.__dict__[key] = None
-            return
+    
+    def dict(self):
+        corrects = { field_name: json_name for json_name, field_name in self._corrects.items() }
 
-        if field.parent is list:
-            objs = [field.cls(obj) for obj in value] if field.cls else value
-            self.__dict__[key] = objs
-        elif field.cls and issubclass(field.cls, TeleObj):
-            self.__dict__[key] = field.cls(value)
-        elif field.cls is ...:
-            self.__dict__[key] = type(self)(value)
-        else:
-            self.__dict__[key] = value
+        res = {}
+
+        for key, value in self.__dict__.items():
+            if key in corrects:
+                key = corrects[key]
+
+            if type(value) is list:
+                res[key] = [ 
+                    item.dict() if isinstance(item, TeleObj) 
+                    else [obj.dict() if isinstance(obj, TeleObj) else obj for obj in item] if isinstance(item, list)
+                    else item
+                    
+                    for item in value 
+                ]
+            elif isinstance(value, TeleObj):
+                res[key] = value.dict()
+            else:
+                res[key] = value
+
+        return res

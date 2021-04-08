@@ -1,12 +1,16 @@
-from TeleNex.teleNex.types import chat
 from typing import List, Optional
+
+from .types import TeleObj
 
 import aiohttp
 
 
 def generate_payload(args: dict):
     del args['self']
-    data = { k: v for k, v in args.items() if v is not None }
+    data = { 
+        k: v.dict() if isinstance(v, TeleObj) else v
+        for k, v in args.items() if v is not None 
+    }
 
     return data
 

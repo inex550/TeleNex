@@ -1,11 +1,7 @@
 from typing import Optional, List
-from . import TeleObj, Field
 
-from .user import User
-from .chat import Chat
-from .message_entity import MessageEntity
-from .document import Document
-from .photo_size import PhotoSize
+from . import TeleObj, Field
+from . import User, Chat, MessageEntity, Document, PhotoSize
 
 
 class Message(TeleObj):

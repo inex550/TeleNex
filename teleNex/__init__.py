@@ -1,3 +1,3 @@
-from .bot import Bot
+from . import types
 
-from . import bot
+from .bot import Bot

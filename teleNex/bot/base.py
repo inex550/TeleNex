@@ -1,4 +1,4 @@
-from typing import Any, Dict, Callable, List, Tuple
+from typing import Any, Dict, Callable, List, Tuple, AsyncGenerator
 
 from ..types import Update, Message, Response
 from ..helpers import ApiHelper
@@ -39,12 +39,9 @@ class BaseBot:
         if message.sticker:
             if 'sticker' in self._global_msg_types:
                 asyncio.create_task( self._global_msg_types['sticker'](message) )
-
-            if (message.sticker.file_id in self._file_id_sticker_msgs):
-                asyncio.create_task( self._file_id_sticker_msgs[message.sticker.file_id] )
             
             if (message.sticker.file_unique_id in self._file_id_sticker_msgs):
-                asyncio.create_task( self._file_id_sticker_msgs[message.sticker.file_unique_id] )
+                asyncio.create_task( self._file_id_sticker_msgs[message.sticker.file_unique_id](message) )
 
         if message.document:
             if 'document' in self._global_msg_types:

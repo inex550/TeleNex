@@ -6,7 +6,6 @@ from ..types import (
     Message, 
     File,
     ReplyBase,
-    Sticker
 )
 from ..types import ReplyBase
 
@@ -59,6 +58,7 @@ class Bot(BaseBot):
         self, *,
         texts   : List[str] = None,
         cmds    : List[str] = None,
+        stickers: List[str] = None,
         msg_type: str = None,
         func    : Callable[[Message], bool] = None
     ):
@@ -68,6 +68,9 @@ class Bot(BaseBot):
 
             if cmds:
                 self._key_cmd_msgs.update( {cmd: d_func for cmd in cmds} )
+
+            if stickers:
+                self._file_id_sticker_msgs.update( {sticker: d_func for sticker in stickers} )
             
             if msg_type:
                 self._global_msg_types[msg_type] = d_func

@@ -16,6 +16,7 @@ class BaseBot:
 
         self._key_text_msgs: Dict[str, Callable[[Message], Any]] = {}
         self._key_cmd_msgs: Dict[str, Callable[[Message], Any]] = {}
+        self._file_id_sticker_msgs: Dict[str, Callable[[Message], Any]] = {}
         self._global_msg_types: Dict[str, Callable[[Message], Any]] = {}
 
         self._func_handlers: List[Tuple[ Callable[[Message], bool], Callable[[Message], Any] ]] = []
@@ -34,6 +35,16 @@ class BaseBot:
 
             if message.text[1:] in self._key_cmd_msgs:
                 asyncio.create_task( self._key_cmd_msgs[message.text[1:]](message) )
+
+        if message.sticker:
+            if 'sticker' in self._global_msg_types:
+                asyncio.create_task( self._global_msg_types['sticker'](message) )
+
+            if (message.sticker.file_id in self._file_id_sticker_msgs):
+                asyncio.create_task( self._file_id_sticker_msgs[message.sticker.file_id] )
+            
+            if (message.sticker.file_unique_id in self._file_id_sticker_msgs):
+                asyncio.create_task( self._file_id_sticker_msgs[message.sticker.file_unique_id] )
 
         if message.document:
             if 'document' in self._global_msg_types:
@@ -67,6 +78,7 @@ class BaseBot:
         async with self.api.session:
             while True:
                 json_data = await self.api.get_updates(timeout=60, offset=self._update_offset)
+                print(json_data)
                 updates: List[Update] = self._process_response(json_data, Update)
 
                 for update in updates:

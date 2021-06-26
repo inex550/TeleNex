@@ -7,10 +7,10 @@ from .user import User
 from .document import Document
 from .photo_size import PhotoSize
 from .message_entity import MessageEntity
-from .message import Message
-from .file import File
 from .mask_position import MaskPosition
 from .sticker import Sticker
+from .message import Message
+from .file import File
 
 from .update import Update
 from .response import Response

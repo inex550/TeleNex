@@ -1,7 +1,14 @@
 from typing import Optional, List
 
 from . import TeleObj, Field
-from . import User, Chat, MessageEntity, Document, PhotoSize
+from . import (
+    User, 
+    Chat, 
+    MessageEntity, 
+    Document, 
+    PhotoSize, 
+    Sticker
+)
 
 
 class Message(TeleObj):
@@ -29,3 +36,4 @@ class Message(TeleObj):
     entities: Optional[List[MessageEntity]] = Field(MessageEntity, parent=list)
     document: Optional[Document] = Field(Document)
     photo: Optional[List[PhotoSize]] = Field(PhotoSize, parent=list)
+    sticker: Optional[Sticker] = Field(Sticker)

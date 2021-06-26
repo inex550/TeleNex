@@ -20,6 +20,8 @@ class ApiHelper:
 
         self._session: aiohttp.ClientSession = None
 
+        self.request_config = { 'ssl': False }
+
     @property
     def session(self):
         if self._session is None or self._session.closed:
@@ -28,11 +30,11 @@ class ApiHelper:
 
     async def make_request(self, method: str, data: dict = None) -> Optional[dict]:
         url = f'https://api.telegram.org/bot{self.token}/{method}'
-        async with self.session.post(url, json=data) as resp:
+        async with self.session.post(url, json=data, **self.request_config) as resp:
             return await resp.json()
 
     async def download_file(self, file_path: str, save_path: str=None):
-        async with self.session.get(f'https://api.telegram.org/file/bot{self.token}/{file_path}') as resp:
+        async with self.session.get(f'https://api.telegram.org/file/bot{self.token}/{file_path}', **self.request_config) as resp:
             if save_path:
                 with open(save_path, 'wb') as file:
                     data = await resp.content.read()

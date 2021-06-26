@@ -5,7 +5,7 @@ from .. import TeleObj, Field
 from ...helpers import generate_payload
 
 
-class KeyboardButton(ReplyBase):
+class KeyboardButton(TeleObj):
     text: str = Field()
     request_contact: Optional[bool] = Field()
     request_location: Optional[bool] = Field()
@@ -19,8 +19,8 @@ class KeyboardButton(ReplyBase):
         super().__init__(payload)
 
 
-class ReplyKeyboardMarkup(TeleObj):
-    keyboard: List[List[KeyboardButton]] = Field()
+class ReplyKeyboardMarkup(ReplyBase):
+    keyboard: List[List[KeyboardButton]] = Field(KeyboardButton, two_dim=True)
     resize_keyboard: Optional[bool] = Field()
     one_time_keyboard: Optional[bool] = Field()
     selective: Optional[bool] = Field()

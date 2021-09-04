@@ -25,7 +25,7 @@ class Bot(BaseBot):
         reply_markup                : Optional[ReplyBase] = None
     ) -> Message:
         data = generate_payload(locals().copy())
-        response = await self.api.make_request('sendMessage', data)
+        response = await self._api.make_request('sendMessage', data)
         return self._process_response(response, Message)
 
 
@@ -39,18 +39,18 @@ class Bot(BaseBot):
         reply_markup                : Optional[ReplyBase] = None
     ):
         data = generate_payload(locals().copy())
-        response = await self.api.make_request('sendSticker', data)
+        response = await self._api.make_request('sendSticker', data)
         return self._process_response(response, Message)
 
 
     async def download_file(self, file_id: str, save_path: str=None):
         file: File = await self.get_file(file_id)
-        return await self.api.download_file(file.file_path, save_path)
+        return await self._api.download_file(file.file_path, save_path)
 
 
     async def get_file(self, file_id: str):
         data = { 'file_id': file_id }
-        response = await self.api.make_request('getFile', data=data)
+        response = await self._api.make_request('getFile', data=data)
         return self._process_response(response, File)
 
 
@@ -81,14 +81,8 @@ class Bot(BaseBot):
         return decorator
 
             
-    def run(
-        self,
-        polling = True
-    ):
-        if polling:
-            try:
-                asyncio.run(self.polling())
-            except KeyboardInterrupt:
-                quit()
-
-        assert polling, 'polling must be True'
+    def run(self):
+        try:
+            asyncio.run(self.polling())
+        except KeyboardInterrupt:
+            quit()

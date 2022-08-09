@@ -23,8 +23,7 @@ setuptools.setup(
     ],
     packages=setuptools.find_packages(),
     install_requires=[
-        'starlette>=0.14.2',
-        'aiohttp>=3.7.4.post0'
+        'aiohttp>=3.7.4'
     ],
     python_requires='>=3.7'
 )

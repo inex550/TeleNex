@@ -68,6 +68,7 @@ class Bot(BaseBot):
         queue = self.question_queues[chat_id] = Queue()
 
         msg: Message = await queue.get()
+        self.question_queues[chat_id] = None
         return msg
 
 

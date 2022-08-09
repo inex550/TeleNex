@@ -1,2 +1,1 @@
-starlette==0.14.2
-aiohttp==3.7.4.post0
+aiohttp==3.8.0

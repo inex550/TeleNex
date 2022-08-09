@@ -10,6 +10,7 @@ from ..types import (
 from ..types import ReplyBase
 
 import asyncio
+from asyncio import Queue
 
 
 class Bot(BaseBot):
@@ -52,6 +53,22 @@ class Bot(BaseBot):
         data = { 'file_id': file_id }
         response = await self._api.make_request('getFile', data=data)
         return self._process_response(response, File)
+
+
+    async def send_question(
+        self,
+        chat_id: str,
+        text: str,
+    ) -> Message:
+        await self.send_msg(chat_id, text)
+
+        queue = self.question_queues.get(chat_id);
+        if queue is not None:
+            queue.put_nowait(None)
+        queue = self.question_queues[chat_id] = Queue()
+
+        msg: Message = await queue.get()
+        return msg
 
 
     def on_message(

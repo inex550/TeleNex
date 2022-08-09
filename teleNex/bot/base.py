@@ -24,6 +24,8 @@ class BaseBot:
         self._file_id_sticker_msgs: Dict[str, Callable[[Message], Any]] = {}
         self._global_msg_types: Dict[str, Callable[[Message], Any]] = {}
 
+        self.question_queues: Dict[str, asyncio.Queue] = {}
+
         self._func_handlers: List[Tuple[ Callable[[Message], bool], Callable[[Message], Any] ]] = []
         
 
@@ -32,14 +34,20 @@ class BaseBot:
             asyncio.create_task( self._global_msg_types['all'](message) )
 
         if message.text:
+            is_cmd = message.text[1:] in self._key_cmd_msgs
+            ans_queue = self.question_queues.get(message.chat.id)
+
             if 'text' in self._global_msg_types:
                 asyncio.create_task( self._global_msg_types['text'](message) )
 
-            if message.text in self._key_text_msgs:
+            if message.text in self._key_text_msgs and ans_queue is None:
                 asyncio.create_task( self._key_text_msgs[message.text](message) )
 
-            if message.text[1:] in self._key_cmd_msgs:
+            if is_cmd:
                 asyncio.create_task( self._key_cmd_msgs[message.text[1:]](message) )
+
+            if not is_cmd and ans_queue != None:
+                ans_queue.put_nowait(message)
 
         if message.sticker:
             if 'sticker' in self._global_msg_types:
